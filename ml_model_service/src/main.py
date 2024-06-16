@@ -5,6 +5,9 @@ import json
 import base64
 from datetime import datetime
 import random
+import torch
+import ast
+import logging
 
 from .utils import generate_prompt, generate_negative_prompt
 from . import config
@@ -43,20 +46,29 @@ def image_generator(path_to_image: Path, metadata: dict) -> tuple[bytes, dict]:
     metadata['negative_prompt'] = negative_prompt
     metadata['strength'] = strength
     metadata['guidance_scale'] = guidance_scale
-    
-    
-    img = txt2img_model(
-        prompt=sd_llm_prompt, 
-        negative_prompt=negative_prompt,
-        strength=strength, 
-        guidance_scale=guidance_scale, 
-        num_inference_steps=config.NUM_INFERENCE_STEPS,
-        height=metadata['height'], width=metadata['width']
-    ).images[0]
-    img.save(path_to_image)
+    height = metadata['height']
+    width = metadata['width']
 
-    with open(path_to_image, 'rb') as f:
-        image_bytes = f.read()
+    height = (height // 8) * 8
+    width = (width // 8) * 8
+    try:
+        img = txt2img_model(
+            prompt=sd_llm_prompt, 
+            negative_prompt=negative_prompt,
+            strength=strength, 
+            guidance_scale=guidance_scale, 
+            generator=torch.manual_seed(13),
+            num_inference_steps=config.NUM_INFERENCE_STEPS,
+            height=height, width=width
+        ).images[0]
+        img.save(path_to_image)
+
+        with open(path_to_image, 'rb') as f:
+            image_bytes = f.read()
+    except Exception as e:
+        logging.error(f"Failed to generate image: {e}")
+        image_bytes = None
+
     return image_bytes, metadata
     
 
@@ -80,7 +92,7 @@ def store_image_path_in_database(user_id: str, image_path: str, metadata: dict):
         cur.execute("INSERT INTO interactions (user_id, image_url, metadata) VALUES (%s, %s, %s)", (user_id, str(image_path), json.dumps(metadata)))
         conn.commit()
     except Exception as e:
-        print(f"Failed to store image path in database: {e}")
+        logging.error(f"Failed to store image path in database: {e}")
         conn.rollback()
     finally:
         cur.close()
@@ -107,7 +119,7 @@ def generate_image() -> tuple[str, int]:
     try:
         data = request.get_json()
         user_id = data.get('user_id')
-        metadata = data.get('metadata')
+        metadata = ast.literal_eval(data.get('metadata'))
         unique_id = datetime.now().strftime("%d.%m.%Y_%H:%M:%S")
         image_filename = f'image_{user_id}_{unique_id}.jpg'
         image_path = IMAGE_DIR / image_filename
@@ -115,10 +127,11 @@ def generate_image() -> tuple[str, int]:
 
         image_base64 = base64.b64encode(img).decode('utf-8')
         store_image_path_in_database(user_id, str(image_path), metadata)
-        
+
         return jsonify({'image_path': str(image_path), 'image': image_base64})
 
     except Exception as e:
+        logging.error(f"Failed to generate image: {e}")
         return jsonify({"error": f"An error occurred: {e}"}), 500
 
 if __name__ == '__main__':

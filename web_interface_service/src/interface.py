@@ -85,14 +85,14 @@ def get_history(user_id: str) -> pd.DataFrame:
 
 with gr.Blocks() as demo:
     input_data = gr.Textbox(label="User ID")
-    metadata_input = gr.Textbox(label="Metadata", value="{'age': 20, 'sex': 'male', 'height': 300, 'width': 300}")
+    metadata_input = gr.Textbox(label="Metadata", value="{'age': 20, 'sex': 'male', 'height': 720, 'width': 720}")
     output_data = gr.Image()
     history_viewer = gr.Dataframe(headers=["id", "image_url", "metadata", "user_id"], datatype=["str", "str", "str", "str"])
     get_history_button = gr.Button("Get History by user ID")
-    mark_result_button = gr.Button("Mark As Good Image")
+    mark_result_button = gr.Button("Send Mark image to database")
 
     get_history_button.click(get_history, inputs=input_data, outputs=history_viewer)
-    mark_result_button.click(mark_image, inputs=[input_data, gr.Checkbox(label="Send Mark image to database")], outputs=None)
+    mark_result_button.click(mark_image, inputs=[input_data, gr.Checkbox(label="Mark As Good Image")], outputs=None)
 
     interface = gr.Interface(
         fn=generate_image,

@@ -9,6 +9,8 @@ services:
       - "5001"
     volumes:
       - ./ml_model_service/data:/app/data
+    runtime: nvidia
+
 
   rest_api_service:
     build: ./rest_api_service

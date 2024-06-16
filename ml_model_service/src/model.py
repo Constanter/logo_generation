@@ -1,6 +1,5 @@
 import torch
-from diffusers import StableDiffusionXLPipeline, AutoPipelineForText2Image
-from diffusers import DPMSolverMultistepScheduler
+from diffusers import AutoPipelineForText2Image,DPMSolverMultistepScheduler
 
 
 def get_model() -> AutoPipelineForText2Image:
@@ -12,10 +11,12 @@ def get_model() -> AutoPipelineForText2Image:
     AutoPipelineForText2Image
         The ML model.
     """
-    pipe = StableDiffusionXLPipeline.from_pretrained(
-        "RunDiffusion/Juggernaut-X-Hyper",
-        torch_dtype=torch.float16
+    pipe = AutoPipelineForText2Image.from_pretrained(
+        'lykon/dreamshaper-xl-v2-turbo',
+        torch_dtype=torch.float16,
+        variant="fp16"
     )
+
     pipe.scheduler = DPMSolverMultistepScheduler.from_config(pipe.scheduler.config)
 
     pipe.enable_sequential_cpu_offload()
