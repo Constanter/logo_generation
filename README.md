@@ -40,55 +40,13 @@ curl -X GET "http://localhost:5000/api/interactions/123"
 Each service has its own `requirements.txt` file listing the required Python packages.
 
 
-# Logo Generation System
-
-logo-generation/
-|   |-- ml_model_service/
-|   |   |-- data/
-|   |   |-- src/
-|   |   |   |-- __init__.py
-|   |   |   |-- main.py
-|   |   |   |-- model.py
-|   |   |   |-- config.py
-|   |   |-- Dockerfile
-|   |   |-- requirements.txt
-|   |-- rest_api_service/
-|   |   |-- src/
-|   |   |   |-- __init__.py
-|   |   |   |-- main.py
-|   |   |   |-- api.py
-|   |   |   |-- config.py
-|   |   |-- Dockerfile
-|   |   |-- requirements.txt
-|   |-- storage_service/
-|   |   |-- data/
-|   |   |-- src/
-|   |   |   |-- __init__.py
-|   |   |   |-- main.py
-|   |   |   |-- db.py
-|   |   |   |-- config.py
-|   |   |-- Dockerfile
-|   |   |-- requirements.txt
-|   |-- web_interface_service/
-|   |   |-- src/
-|   |   |   |-- __init__.py
-|   |   |   |-- main.py
-|   |   |   |-- interface.py
-|   |   |   |-- config.py
-|   |   |-- Dockerfile
-|   |   |-- requirements.txt
-|   |-- docker-compose.yml
-|   |-- README.md
-
-
 ## Running the Web Interface
 
 1. Start the Docker containers using `docker-compose up`.
 2. Access the web interface at `http://localhost:7860`.
 
 
-
-
+## API examples
 ```bash
 curl -X POST \
   http://localhost:5000/api/generate \
@@ -100,31 +58,3 @@ curl -X POST \
 ```bash
 curl -X GET "http://localhost:5000/api/interactions/123"
 ```
-
-```python
-import requests
-
-user_id = "123"
-response = requests.get(f"http://localhost:5000/api/interactions/{user_id}")
-
-if response.status_code == 200:
-    data = response.json()
-    print(data)
-else:
-    print(f"Request failed with status code {response.status_code}")
-```
-
-docker exec -it logo_generation-storage_db-1 psql -U user logo_storage
-SELECT * FROM interactions;
-SELECT * FROM marked_images;
-
-
-# Generate an image
-curl -X POST \
-  http://localhost:5000/api/generate \
-  -H 'Content-Type: application/json' \
-  -d '{"user_id": "123", "metadata": {"country": "US", "age": 20, "sex": "M"}}'
-
-# Download the generated image
-curl -O http://localhost:5000/api/download/<path_to_image>
-
