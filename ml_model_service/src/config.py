@@ -1,5 +1,5 @@
 SERVICE_PORT = 5001
-MODEL_DATA_PATH = './data'
+MODEL_DATA_PATH = '/app/data'
 DB_CONFIG = {
     'host': 'storage_db',
     'database': 'logo_storage',
