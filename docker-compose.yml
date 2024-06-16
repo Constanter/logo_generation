@@ -45,6 +45,8 @@ services:
     build: ./web_interface_service
     networks:
       - logo-network
+    depends_on:
+      - ml_model_service
     ports:
       - "7860:7860"
     expose:
