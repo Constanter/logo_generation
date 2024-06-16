@@ -1,0 +1,56 @@
+services:
+  ml_model_service:
+    build: ./ml_model_service
+    networks:
+      - logo-network
+    ports:
+      - "5001:5001"
+    expose:
+      - "5001"
+    volumes:
+      - ./ml_model_service/data:/app/data
+
+  rest_api_service:
+    build: ./rest_api_service
+    networks:
+      - logo-network
+    ports:
+      - "5000:5000"
+    expose:
+      - "5000"
+
+  storage_db:
+    image: postgres:14.7
+    networks:
+      - logo-network
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: logo_storage
+    volumes:
+      - ./storage_service/data:/var/lib/postgresql/data
+
+  storage_service:
+    build: ./storage_service
+    networks:
+      - logo-network
+    depends_on:
+      - storage_db
+    ports:
+      - "5432:5432"
+    expose:
+      - "5432"
+
+  web_interface_service:
+    build: ./web_interface_service
+    networks:
+      - logo-network
+    ports:
+      - "7860:7860"
+    expose:
+      - "7860"
+
+
+networks:
+  logo-network:
+    driver: bridge
