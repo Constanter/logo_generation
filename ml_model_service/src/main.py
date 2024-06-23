@@ -34,9 +34,6 @@ def image_generator(path_to_image: Path, metadata: dict) -> tuple[bytes, dict]:
     tuple[bytes, dict]
         The image bytes and the metadata.
     """
-    with open('/app/data/colors.txt', 'a') as f:
-        color = f"metadata: {metadata}, type metadata: {type(metadata)},"
-        f.write(color)
     age = metadata.get('age', 30)
     sex = metadata.get('sex', '')
     product = metadata.get('product', 'people')
