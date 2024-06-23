@@ -34,6 +34,9 @@ def image_generator(path_to_image: Path, metadata: dict) -> tuple[bytes, dict]:
     tuple[bytes, dict]
         The image bytes and the metadata.
     """
+    with open('/app/data/colors.txt', 'a') as f:
+        color = f"metadata: {metadata}, type metadata: {type(metadata)},"
+        f.write(color)
     age = metadata.get('age', 30)
     sex = metadata.get('sex', '')
     product = metadata.get('product', 'people')
@@ -51,7 +54,6 @@ def image_generator(path_to_image: Path, metadata: dict) -> tuple[bytes, dict]:
     metadata['guidance_scale'] = guidance_scale
     height = metadata['height']
     width = metadata['width']
-
     height = (height // 8) * 8
     width = (width // 8) * 8
 
@@ -114,11 +116,17 @@ def generate_image() -> tuple[str, int]:
         data = request.get_json()
         user_id = data.get('user_id')
         metadata = ast.literal_eval(data.get('metadata'))
-
-        metadata.setdefault('age', 30)
-        metadata.setdefault('sex', '')
-        metadata.setdefault('product', 'people')
-        metadata.setdefault('custom_prompt', '')
+        if 'age' not in metadata:
+            metadata['age'] = 30
+            
+        if 'sex' not in metadata:
+            metadata['sex'] = ''
+            
+        if 'product' not in metadata:
+            metadata['product'] = 'people'
+            
+        if 'custom_prompt' not in metadata:
+            metadata['custom_prompt'] = ''
 
         unique_id = datetime.now().strftime("%d.%m.%Y_%H:%M:%S")
         image_filename = f'image_{user_id}_{unique_id}.jpg'
