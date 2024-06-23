@@ -94,7 +94,7 @@ def generate_negative_prompt(product: str = 'people') -> str:
     """
     if 'people' in product:
         negative_prompt = "avoid any depiction of animals objects." + negative_prompt
-    elif 'product' in product:
-        negative_prompt = "avoid any depiction of humans or human-like figures." + negative_prompt
+    elif 'people' not in product:
+        negative_prompt = "avoid any depiction of humans or human-like figures. avoid any depiction of animals objects. avoid any depiction of digits and letters." + negative_prompt
         
     return negative_prompt
