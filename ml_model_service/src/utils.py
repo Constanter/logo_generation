@@ -48,15 +48,15 @@ def generate_prompt(age: int = 30, sex: str = '', product: str = 'people', custo
         gender = "an object"
         age_group = ""
 
-    if 'car' in product:
-        attribute = "a vehicle"
-        activity = "parked"
+    if 'card' in product:
+        attribute = "a payment card without digits"
+        activity = "being used"
     elif 'house' in product:
         attribute = "a building"
         activity = "inhabited"
-    elif 'credit card' in product:
-        attribute = "a payment card without digits"
-        activity = "being used"
+    elif 'car' in product:
+        attribute = "a vehicle"
+        activity = "parked"
     else:
         attribute = random.choice(attributes)
         activity = random.choice(activities)
@@ -95,6 +95,6 @@ def generate_negative_prompt(product: str = 'people') -> str:
     if 'people' in product:
         negative_prompt = "avoid any depiction of animals objects." + negative_prompt
     elif 'people' not in product:
-        negative_prompt = "avoid any depiction of humans or human-like figures. avoid any depiction of animals objects. avoid any depiction of digits and letters." + negative_prompt
+        negative_prompt = "avoid any depiction of digits and letters.avoid any depiction of humans or human-like figures." + negative_prompt
         
     return negative_prompt
