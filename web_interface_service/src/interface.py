@@ -85,7 +85,7 @@ def get_history(user_id: str) -> pd.DataFrame:
 
 with gr.Blocks() as demo:
     input_data = gr.Textbox(label="User ID")
-    metadata_input = gr.Textbox(label="Metadata", value="{'age': 20, 'sex': 'male', 'height': 720, 'width': 720}")
+    metadata_input = gr.Textbox(label="Metadata", value="{'age': 20, 'sex': 'male', 'product': 'people', 'custom_prompt': '', 'height': 720, 'width': 720}")
     output_data = gr.Image()
     history_viewer = gr.Dataframe(headers=["id", "image_url", "metadata", "user_id"], datatype=["str", "str", "str", "str"])
     get_history_button = gr.Button("Get History by user ID")
@@ -93,6 +93,57 @@ with gr.Blocks() as demo:
 
     get_history_button.click(get_history, inputs=input_data, outputs=history_viewer)
     mark_result_button.click(mark_image, inputs=[input_data, gr.Checkbox(label="Mark As Good Image")], outputs=None)
+    instruction_md = gr.Markdown(
+        """
+        # Инструкция по использованию сервиса:
+
+        ## Метаданные
+        Метаданные должны содержать следующие поля:
+
+        - `user_id`: Идентификатор пользователя. Может быть и числом и строкой.
+        - `sex`: Пол пользователя. Может быть либо 'male' либо 'female' можно оставить пустым.
+        - `age`: Возраст пользователя. число.
+        - `product`: Категория продукта. Может быть либо 'people', либо 'car', либо 'house', либо 'credit card' можно оставить пустым.
+        - `custom_prompt`: Пользовательский промпт. Может быть либо строкой либо пустым. Добавит на генерацию предметы или свойства предметов.
+        - `height`: Высота изображения. Число.
+        - `width`: Ширина изображения. Число.
+        
+        ## Пример метаданных:
+        ```
+        {
+            "user_id": "123456",
+            "sex": "male",
+            "age": 20,
+            "product": "car",
+            "custom_prompt": "engaging in driving",
+            "height": 720,
+            "width": 720
+        }
+        ```
+        
+        ```
+        {
+            "user_id": "123456",
+            "product": "house",
+            "custom_prompt": "beautiful country house",
+            "height": 480,
+            "width": 1156
+        }
+        ```
+
+        ## Генерация изображения
+        
+        Для генерации изображения необходимо ввести метаданные в поле `metadata` и имя пользователя в поле `user_id` и нажать на кнопку `Generate Image`.
+        
+        ## Разметка изображения
+        
+        Для разметки изображения необходимо ввести метаданные в поле `metadata` и нажать на кнопку `Generate Image`. После если изображение хоршее и понравилось нажать на кнопку `Mark As Good Image`(выставляется метка True) или оставить чекбокс пустым(False). Отправить изображение в базу данных, нажать на кнопку `Send Mark image to database`.
+        
+        ## Получение истории сгенерированных изображений для пользователя
+        
+        Ввести в поле `user_id` имя пользователя для которого нужно получить историю и нажать на кнопку `Get History by user ID`. В вверху странице появится таблица с историей сгенерированных изображений для данного пользователя.
+        """
+    )
 
     interface = gr.Interface(
         fn=generate_image,
